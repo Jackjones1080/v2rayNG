@@ -69,6 +69,12 @@ fun MainTopBar(
         },
         actions = {
             if (!showSearch) {
+                IconButton(onClick = { onAction(MainAction.UpdateSubscriptions) }) {
+                    Icon(
+                        painterResource(R.drawable.ic_refresh_24dp),
+                        contentDescription = "Get Config"
+                    )
+                }
                 IconButton(onClick = { onSearchToggle(true) }) {
                     Icon(painterResource(R.drawable.ic_search_24dp), contentDescription = stringResource(R.string.acc_search))
                 }
