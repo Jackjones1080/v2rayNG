@@ -140,7 +140,7 @@ private fun BottomActionItem(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.weight(1f).height(68.dp).clickable(onClick = onClick).padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(0.25f).height(68.dp).clickable(onClick = onClick).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
