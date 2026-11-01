@@ -1,0 +1,76 @@
+name: My VPN debug APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "ndk;30.0.16248370"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/30.0.16248370" >> "$GITHUB_ENV"
+
+      - name: Build native hev library
+        shell: bash
+        run: |
+          bash compile-hevtun.sh
+
+      - name: Find matching Xray library version
+        shell: bash
+        run: |
+          cd AndroidLibXrayLite
+          CURRENT_TAG=$(git describe --tags --abbrev=0)
+          echo "CURRENT_TAG=$CURRENT_TAG" >> "$GITHUB_ENV"
+
+      - name: Download matching libv2ray
+        uses: robinraju/release-downloader@v1.13
+        with:
+          repository: "2dust/AndroidLibXrayLite"
+          tag: ${{ env.CURRENT_TAG }}
+          fileName: "libv2ray.aar"
+          out-file-path: V2rayNG/app/libs/
+
+      - name: Copy native libraries
+        shell: bash
+        run: |
+          mkdir -p V2rayNG/app/libs
+          cp -r libs/. V2rayNG/app/libs/
+
+      - name: Build My VPN debug APK
+        working-directory: V2rayNG
+        shell: bash
+        run: |
+          chmod +x ./gradlew
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          ./gradlew --no-daemon assemblePlaystoreDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-vpn-debug-apk
+          path: V2rayNG/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+          retention-days: 14
