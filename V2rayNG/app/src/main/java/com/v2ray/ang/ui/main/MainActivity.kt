@@ -22,6 +22,7 @@ import com.v2ray.ang.extension.toastError
 import com.v2ray.ang.extension.toastSuccess
 import com.v2ray.ang.handler.AngConfigManager
 import com.v2ray.ang.handler.MmkvManager
+import com.v2ray.ang.handler.WorkerConfigFetcher
 import com.v2ray.ang.handler.SettingsChangeManager
 import com.v2ray.ang.handler.SettingsManager
 import com.v2ray.ang.handler.SubscriptionInfoParser
@@ -94,6 +95,7 @@ class MainActivity : HelperBaseComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel.onAction(MainAction.Initialize)
+        refreshWorkerConfigIfDue()
 
         checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {}
     }
@@ -125,6 +127,28 @@ class MainActivity : HelperBaseComponentActivity() {
         )
     }
 
+    /**
+     * Pull the built-in Worker subscription at most once every six hours.
+     * The existing batch importer handles parsing and profile persistence.
+     */
+    private fun refreshWorkerConfigIfDue() {
+        val preferences = getSharedPreferences("my_vpn_worker", MODE_PRIVATE)
+        val lastRefresh = preferences.getLong("last_successful_refresh", 0L)
+        val intervalMillis = 6L * 60L * 60L * 1000L
+        if (System.currentTimeMillis() - lastRefresh < intervalMillis) return
+
+        lifecycleScope.launch {
+            try {
+                val result = WorkerConfigFetcher.fetch()
+                mainViewModel.onAction(MainAction.ImportBatchConfig(result.configsText))
+                preferences.edit().putLong("last_successful_refresh", System.currentTimeMillis()).apply()
+                LogUtil.i(AppConfig.TAG, "Worker subscription fetched: ${result.configCount} configs")
+            } catch (error: Exception) {
+                LogUtil.e(AppConfig.TAG, "Worker subscription refresh failed", error)
+                toastError(R.string.toast_failure)
+            }
+        }
+    }
     private fun shareToClipboard(guid: String): Boolean =
         AngConfigManager.share2Clipboard(this, guid) == 0
 
