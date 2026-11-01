@@ -2,6 +2,13 @@ name: My VPN debug APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'V2rayNG/**'
+      - '.gitmodules'
+      - '.github/workflows/myvpn-debug.yml'
 
 permissions:
   contents: read
