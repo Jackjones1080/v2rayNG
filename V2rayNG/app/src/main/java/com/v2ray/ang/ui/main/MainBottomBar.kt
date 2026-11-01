@@ -116,16 +116,16 @@ fun MainBottomBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomActionItem(R.drawable.ic_cloud_download_24dp, "Get Config", activeColor) {
+            BottomActionItem(Modifier.weight(1f), R.drawable.ic_cloud_download_24dp, "Get Config", activeColor) {
                 onAction(MainAction.UpdateSubscriptions)
             }
-            BottomActionItem(R.drawable.ic_flash_on_24dp, "Test", inactiveColor) {
+            BottomActionItem(Modifier.weight(1f), R.drawable.ic_flash_on_24dp, "Test", inactiveColor) {
                 onAction(MainAction.TestCurrentServer)
             }
-            BottomActionItem(R.drawable.ic_outline_filter_alt_24, "Sort", inactiveColor) {
+            BottomActionItem(Modifier.weight(1f), R.drawable.ic_outline_filter_alt_24, "Sort", inactiveColor) {
                 onAction(MainAction.SortByTestResults)
             }
-            BottomActionItem(R.drawable.ic_subscriptions_24dp, "All Subs", inactiveColor) {
+            BottomActionItem(Modifier.weight(1f), R.drawable.ic_subscriptions_24dp, "All Subs", inactiveColor) {
                 onNavigate(MainDestination.Subscriptions)
             }
         }
@@ -134,13 +134,14 @@ fun MainBottomBar(
 
 @Composable
 private fun BottomActionItem(
+    modifier: Modifier,
     iconRes: Int,
     label: String,
     tint: Color,
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(0.25f).height(68.dp).clickable(onClick = onClick).padding(vertical = 8.dp),
+        modifier = modifier.height(68.dp).clickable(onClick = onClick).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
