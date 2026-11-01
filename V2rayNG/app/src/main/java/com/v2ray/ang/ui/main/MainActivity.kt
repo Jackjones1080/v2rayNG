@@ -95,7 +95,7 @@ class MainActivity : HelperBaseComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel.onAction(MainAction.Initialize)
-        refreshWorkerConfigIfDue()
+        refreshWorkerConfigIfDue(force = false)
 
         checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {}
     }
@@ -108,6 +108,7 @@ class MainActivity : HelperBaseComponentActivity() {
             onAction = { action ->
                 when (action) {
                     MainAction.ToggleService -> handleFabAction()
+                    MainAction.UpdateSubscriptions -> refreshWorkerConfigIfDue(force = true)
                     MainAction.TestCurrentServer -> handleLayoutTestClick()
                     MainAction.ImportQRcode -> importQRcode()
                     MainAction.ImportClipboard -> importClipboard()
@@ -131,11 +132,11 @@ class MainActivity : HelperBaseComponentActivity() {
      * Pull the built-in Worker subscription at most once every six hours.
      * The existing batch importer handles parsing and profile persistence.
      */
-    private fun refreshWorkerConfigIfDue() {
+    private fun refreshWorkerConfigIfDue(force: Boolean) {
         val preferences = getSharedPreferences("my_vpn_worker", MODE_PRIVATE)
         val lastRefresh = preferences.getLong("last_successful_refresh", 0L)
         val intervalMillis = 6L * 60L * 60L * 1000L
-        if (System.currentTimeMillis() - lastRefresh < intervalMillis) return
+        if (!force && System.currentTimeMillis() - lastRefresh < intervalMillis) return
 
         lifecycleScope.launch {
             try {
