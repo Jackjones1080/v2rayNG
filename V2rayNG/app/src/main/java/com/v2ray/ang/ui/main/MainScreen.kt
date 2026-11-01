@@ -189,7 +189,8 @@ fun MainScreen(
                     displayText = displayText,
                     isRunning = isRunning,
                     isDarkTheme = isDarkTheme,
-                    onAction = onAction
+                    onAction = onAction,
+                    onNavigate = onNavigate
                 )
             },
             floatingActionButton = {},
