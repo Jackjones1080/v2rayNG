@@ -211,6 +211,8 @@ class MainActivity : HelperBaseComponentActivity() {
     private fun handleLayoutTestClick() {
         if (mainViewModel.uiState.value.isRunning) {
             mainViewModel.testCurrentServerRealPing()
+        } else {
+            toast("Connect to a server first to test its ping.")
         }
     }
 
