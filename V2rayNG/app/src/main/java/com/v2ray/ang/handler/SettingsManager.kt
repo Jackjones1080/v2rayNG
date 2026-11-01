@@ -42,6 +42,7 @@ object SettingsManager {
         //ensureDefaultSubscription()
         initRoutingRulesets(context)
         migrateServerListToSubscriptions()
+        ensureMyVpnSubscription()
         migrateHysteria2PinSHA256()
     }
 
@@ -557,6 +558,23 @@ object SettingsManager {
 
         // Mark migration as complete
         MmkvManager.encodeSettings(migrationKey, true)
+    }
+
+    /**
+     * Adds the built-in My VPN subscription once, without overwriting user edits.
+     */
+    private fun ensureMyVpnSubscription() {
+        val subscriptionId = "my-vpn-worker-subscription"
+        if (decodeSubscription(subscriptionId) == null) {
+            val subscription = SubscriptionItem(
+                remarks = "My VPN",
+                url = "https://super-frog-38cf.fart27962.workers.dev/",
+                enabled = true,
+                autoUpdate = true,
+                updateInterval = 360
+            )
+            encodeSubscription(subscriptionId, subscription)
+        }
     }
 
     /**
