@@ -198,7 +198,7 @@ private fun ServerListPage(
                 .verticalScrollbar(gridState),
             contentPadding = contentPadding
         ) {
-            itemsIndexed(items = rows, key = { _, item -> item.guid }) { _, row ->
+            itemsIndexed(items = rows, key = { _, item -> item.guid }, contentType = { _, _ -> "server" }) { _, row ->
                 val content: @Composable () -> Unit = {
                     ServerItemColumn(
                         row = row,
@@ -241,7 +241,7 @@ private fun ServerListPage(
                 .verticalScrollbar(listState),
             contentPadding = contentPadding
         ) {
-            itemsIndexed(items = rows, key = { _, item -> item.guid }) { _, row ->
+            itemsIndexed(items = rows, key = { _, item -> item.guid }, contentType = { _, _ -> "server" }) { _, row ->
                 if (canReorder && reorderableState != null) {
                     ReorderableItem(
                         reorderableState,
