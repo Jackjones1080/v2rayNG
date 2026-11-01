@@ -102,7 +102,7 @@ fun MainBottomBar(
                 onAction(MainAction.UpdateSubscriptions)
             }
             BottomActionItem(Modifier.weight(1f), R.drawable.ic_flash_on_24dp, "Test", inactiveColor) {
-                onAction(MainAction.TestAllServers)
+                onAction(MainAction.TestRealAllServers)
             }
             BottomActionItem(Modifier.weight(1f), R.drawable.ic_outline_filter_alt_24, "Sort", inactiveColor) {
                 onAction(MainAction.SortByTestResults)
